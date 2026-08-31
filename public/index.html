@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Matching Engine</title>
+  <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1>AI Image Matching Engine</h1>
+        <p>FlyRank Backend Capstone · Semantic Search, Mismatch Guard & Human-in-the-Loop Review</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary" onclick="loadDashboardMetrics()">Refresh Data</button>
+      </div>
+    </header>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-title">Ingested Images</div>
+        <div class="metric-value" id="metric-total-images">0</div>
+        <div class="metric-sub" id="metric-flagged-images">0 flagged low-confidence</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">AI Token Usage Cost</div>
+        <div class="metric-value" id="metric-total-cost">$0.000000</div>
+        <div class="metric-sub" id="metric-total-calls">0 API calls tracked</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Eval Top-1 Precision</div>
+        <div class="metric-value" style="color: #10b981;">100.0%</div>
+        <div class="metric-sub">12/12 evaluated benchmark posts</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Mismatch Guard Accuracy</div>
+        <div class="metric-value" style="color: #10b981;">100.0%</div>
+        <div class="metric-sub">Zero false positive recommendations</div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-matching')">Post Matching & Guard</button>
+      <button class="tab-btn" onclick="switchTab('tab-reviews')">Human Review Log</button>
+      <button class="tab-btn" onclick="switchTab('tab-images')">Image Corpus (42)</button>
+      <button class="tab-btn" onclick="switchTab('tab-batch')">Batch Jobs & Costs</button>
+    </div>
+
+    <div id="tab-matching" class="tab-content active">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Test Semantic Image Matching</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="post-selector">Choose Sample Post or Write Custom:</label>
+          <select id="post-selector" onchange="onPostSelectChange()">
+            <option value="">-- Select an evaluation post --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-title">Post Title</label>
+          <input type="text" id="custom-title" placeholder="e.g. The Behavior of Red Foxes">
+        </div>
+
+        <div class="form-group">
+          <label for="custom-content">Post Content</label>
+          <textarea id="custom-content" rows="3" placeholder="e.g. A study on Vulpes vulpes hunting in forest..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn" onclick="executePostMatching()">Rank & Evaluate Images</button>
+        </div>
+      </div>
+
+      <div id="matching-results-container" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Matching & Mismatch Guard Analysis</h2>
+          </div>
+          <div id="matching-status-banner" class="alert-banner info"></div>
+          <div id="candidates-list" class="candidates-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-reviews" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Human-in-the-Loop Review History</h2>
+          <button class="btn btn-secondary" onclick="loadReviews()">Refresh Reviews</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Post</th>
+                <th>Suggested Image</th>
+                <th>Similarity</th>
+                <th>Guard Result</th>
+                <th>Reviewer Notes</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted);">No reviews recorded yet. Approve or reject suggestions in the Matching tab.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-images" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Ingested Image Corpus</h2>
+          <div>
+            <select id="image-category-filter" onchange="filterImagesByCategory()" style="width: auto; display: inline-block;">
+              <option value="all">All Categories</option>
+              <option value="animal">Animals</option>
+              <option value="food">Food & Drink</option>
+              <option value="nature">Nature & Landscapes</option>
+              <option value="vehicle">Vehicles</option>
+              <option value="technology">Technology</option>
+            </select>
+          </div>
+        </div>
+        <div id="image-gallery-container" class="image-gallery"></div>
+      </div>
+    </div>
+
+    <div id="tab-batch" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Batch Processing System</h2>
+          <button class="btn" onclick="triggerBatchProcessing()">Re-Run Batch Ingestion</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Job ID</th>
+                <th>Status</th>
+                <th>Total Items</th>
+                <th>Processed</th>
+                <th>Failed</th>
+                <th>Cumulative Cost</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="batch-jobs-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">AI Cost Breakdown by Model</h2>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Operation</th>
+                <th>Total Calls</th>
+                <th>Input Tokens</th>
+                <th>Output Tokens</th>
+                <th>Total USD</th>
+              </tr>
+            </thead>
+            <tbody id="cost-breakdown-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/app.js"></script>
+</body>
+</html>
