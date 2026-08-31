@@ -1,0 +1,102 @@
+[
+  {
+    "id": "eval_post_01",
+    "title": "The Behavior and Ecology of the Red Fox",
+    "content": "A study on Vulpes vulpes hunting techniques, wild red fox habitat, and winter foraging in temperate forest.",
+    "category": "animal",
+    "expectedImageId": "img_01",
+    "expectedSubject": "red fox",
+    "negativeTrapImageId": "img_03",
+    "expectedRejectionReason": "Animal category mismatch: expected fox, detected wolf"
+  },
+  {
+    "id": "eval_post_02",
+    "title": "Surviving the Arctic Tundra: The Arctic Fox",
+    "content": "How the white coated arctic fox endures subzero temperatures in snowy polar tundras.",
+    "category": "animal",
+    "expectedImageId": "img_02",
+    "expectedSubject": "arctic fox"
+  },
+  {
+    "id": "eval_post_03",
+    "title": "Wolf Packs and Territorial Wilderness Dynamics",
+    "content": "Gray wolf pack hierarchy, howling communication, and hunting strategies in northern winter woodlands.",
+    "category": "animal",
+    "expectedImageId": "img_03",
+    "expectedSubject": "gray wolf"
+  },
+  {
+    "id": "eval_post_04",
+    "title": "Golden Retriever Training and Domestic Companion Care",
+    "content": "Essential tips for exercising your friendly golden retriever dog in local parks and grassy fields.",
+    "category": "animal",
+    "expectedImageId": "img_05",
+    "expectedSubject": "golden retriever"
+  },
+  {
+    "id": "eval_post_05",
+    "title": "Grizzly Bears and Salmon Run Feeding Habits",
+    "content": "Observing brown grizzly bears catching jumping salmon during annual river migration runs.",
+    "category": "animal",
+    "expectedImageId": "img_07",
+    "expectedSubject": "grizzly bear"
+  },
+  {
+    "id": "eval_post_06",
+    "title": "Traditional Neapolitan Pizza and Wood-Fired Crusts",
+    "content": "Crafting authentic artisan margherita pizza with fermented dough, San Marzano tomato sauce, and fresh mozzarella.",
+    "category": "food",
+    "expectedImageId": "img_14",
+    "expectedSubject": "margherita pizza",
+    "negativeTrapImageId": "img_16",
+    "expectedRejectionReason": "Food subject mismatch: expected pizza, detected burger"
+  },
+  {
+    "id": "eval_post_07",
+    "title": "The Ultimate Guide to Crafting Gourmet Cheeseburgers",
+    "content": "Grilling juicy beef patties with melted cheddar cheese on toasted brioche buns with crispy bacon.",
+    "category": "food",
+    "expectedImageId": "img_16",
+    "expectedSubject": "gourmet cheeseburger"
+  },
+  {
+    "id": "eval_post_08",
+    "title": "Art of Japanese Sushi and Fresh Salmon Nigiri",
+    "content": "Mastering authentic sushi preparation, seasoned sushi rice, and fresh raw salmon nigiri with wasabi.",
+    "category": "food",
+    "expectedImageId": "img_18",
+    "expectedSubject": "sushi platter"
+  },
+  {
+    "id": "eval_post_09",
+    "title": "Climbing Snow-Capped Alpine Mountain Summits",
+    "content": "High altitude mountaineering gear and techniques for scaling icy rocky Himalayan peaks at dawn.",
+    "category": "nature",
+    "expectedImageId": "img_25",
+    "expectedSubject": "snow-capped mountain peak"
+  },
+  {
+    "id": "eval_post_10",
+    "title": "Exploring Ancient Coastal Redwood Forest Trails",
+    "content": "Walking through towering ancient redwood trees with sunbeams piercing the peaceful misty forest canopy.",
+    "category": "nature",
+    "expectedImageId": "img_30",
+    "expectedSubject": "ancient redwood forest"
+  },
+  {
+    "id": "eval_post_11",
+    "title": "The Rise of High-Performance Electric Sports Cars",
+    "content": "Instant torque, aerodynamic curves, and zero emission performance in modern electric sports cars on coastal roads.",
+    "category": "vehicle",
+    "expectedImageId": "img_35",
+    "expectedSubject": "electric sports car"
+  },
+  {
+    "id": "eval_post_12",
+    "title": "Optimizing Your Software Developer Workspace",
+    "content": "Ergonomic desk setups, dual monitors for coding, and mechanical keyboards for productive engineering.",
+    "category": "technology",
+    "expectedImageId": "img_40",
+    "expectedSubject": "developer workspace"
+  }
+]
