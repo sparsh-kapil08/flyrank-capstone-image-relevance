@@ -126,7 +126,7 @@ Total Ingestion Cost: $0.00252118 USD over 84 AI calls.
     "suggestionId": "sug_eval_post_01_img_01",
     "image": {
       "id": "img_01",
-      "filename": "red_fox_forest.svg",
+      "filename": "red_fox_forest.jpg",
       "subject": "red fox",
       "category": "animal",
       "caption": "A red fox with vibrant orange fur standing alert in a forest",

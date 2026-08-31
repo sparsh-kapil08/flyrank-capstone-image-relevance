@@ -94,37 +94,76 @@ Measured on 12 labeled ground-truth evaluation posts across 4 distinct categorie
 
 ---
 
-## Quickstart Guide
+## Quickstart — Exact Steps
 
 ### Prerequisites
-- Node.js (v20+ or v24)
-- npm
+- Node.js v20 or v24 (no other runtime required)
+- npm (comes with Node.js)
+- A free Google Gemini API key from [aistudio.google.com](https://aistudio.google.com) — **optional**. The app runs fully offline without it using a deterministic fallback classifier.
 
-### Installation
+### 1. Install dependencies
 ```bash
-# Clone the repository and install dependencies
 npm install
 ```
 
-### Seeding Data & Running Batch Ingestion
+### 2. Set environment variables (optional)
 ```bash
-npm run seed
+copy .env.example .env
+# Open .env and paste your GEMINI_API_KEY value
+```
+If you skip this step the app still works — vision and embeddings use the offline fallback.
+
+### 3. Download real images
+```bash
+node scripts/downloadRealImages.js
+```
+Downloads 42 real JPEG photographs from Unsplash into `data/images/`.
+
+### 4. Seed the database
+```bash
+node scripts/seed.js
+```
+Runs every image through the vision pipeline (Gemini Flash or offline fallback), stores structured metadata, generates embeddings for images and posts, and records costs.
+
+Expected output:
+```
+--- Starting Seeding Real Images ---
+Batch Completed: COMPLETED (42/42 images)
+Total Cost: $0.002259 over 84 calls.
+--- Seeding Done ---
 ```
 
-### Running Tests
+### 5. Run tests
 ```bash
-# Run unit and system test suites
-npm test
-
-# Run evaluation benchmark
-npm run eval
+node scripts/test.js
 ```
 
-### Starting the Server
+### 6. Run evaluation benchmark
 ```bash
-npm start
+node scripts/evaluate.js
 ```
-Open `http://localhost:3000` in your browser to access the dashboard.
+
+Expected results:
+```
+Top-1 Precision:          100.0% (12/12)
+Top-3 Retrieval Accuracy: 100.0% (12/12)
+Mismatch Guard Accuracy:  100.0% (2/2)
+```
+
+### 7. Start the server
+```bash
+node src/server.js
+```
+Open **http://localhost:3000** in your browser to access the dashboard.
+
+---
+
+## Limitations
+
+- **Offline fallback embeddings are keyword-based, not truly semantic.** Without a `GEMINI_API_KEY`, the embedding function uses multi-word keyword matching rather than real dense vectors. Results are accurate for the 42-image dataset but would not generalise to unseen subjects without a real API key.
+- **Mismatch guard rules are hand-coded for 4 categories.** The entity contradiction check covers animals, food, nature, and vehicles. It does not cover arbitrary new domains without adding new rules.
+- **No authentication on the API.** The review and ingestion endpoints are open. This is intentional for the capstone demo but is not production-safe.
+- **42-image dataset.** The system is designed and tested at this scale. Larger datasets would benefit from a proper vector database (e.g., pgvector) instead of in-memory cosine comparisons.
 
 ---
 

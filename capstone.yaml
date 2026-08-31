@@ -1,0 +1,40 @@
+﻿run: node src/server.js
+seed: node scripts/downloadRealImages.js && node scripts/seed.js
+test: node scripts/test.js
+eval: node scripts/evaluate.js
+base_url: http://localhost:3000
+
+endpoints:
+  - method: GET
+    path: /api/images
+    description: List all ingested images with metadata tags
+  - method: GET
+    path: /api/images/:id
+    description: Get a single image record and its embedding status
+  - method: POST
+    path: /api/images
+    description: Register a new image filepath for ingestion
+  - method: GET
+    path: /api/posts
+    description: List all blog posts
+  - method: POST
+    path: /api/posts
+    description: Create a post and generate its text embedding
+  - method: GET
+    path: /api/posts/:id/images
+    description: Rank candidate images by cosine similarity and run mismatch guard
+  - method: POST
+    path: /api/reviews/:suggestionId
+    description: Submit a human APPROVED or REJECTED review with optional notes
+  - method: GET
+    path: /api/reviews
+    description: Retrieve full history of human review decisions
+  - method: POST
+    path: /api/batch/process-all
+    description: Trigger background batch ingestion for all pending images
+  - method: GET
+    path: /api/batch/jobs/:id
+    description: Get batch job status, progress, and per-task results
+  - method: GET
+    path: /api/batch/costs
+    description: Get token usage and USD cost breakdown per model and operation
