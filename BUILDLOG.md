@@ -1,4 +1,4 @@
-﻿# BUILDLOG.md — AI Usage Log
+# BUILDLOG.md — AI Usage Log
 
 This document records where AI assistance was used during the capstone, where it was wrong or unhelpful, and what was manually changed or decided by the developer.
 
@@ -35,13 +35,32 @@ This document records where AI assistance was used during the capstone, where it
 The first version of `downloadRealImages.js` crashed on a 404 HTTP response instead of logging a warning and continuing. Two Unsplash URLs returned 404.
 **Fix:** Added a try/catch per image and logged a warning. Manually copied `timber_wolf_cliff.jpg` to fill in `gray_wolf_woods.jpg` which was the 404.
 
-### Wrong: Ambiguous single-word embedding keywords caused wrong Top-1 result
-The fallback embedding function used short single words like `"dog"`, `"bear"`, `"train"` as concept triggers. This caused the "golden retriever" post to match "high-speed bullet train" as Top-1 because the word "companion" partially overlapped with unrelated character-code positions.
-**Fix:** Replaced all single-word keywords with specific multi-word phrases: `"golden retriever"`, `"dog training"`, `"canine companion"` instead of just `"dog"`. Top-1 precision went from 91.7% back to 100%.
+### Wrong: AI used static SVG icon images instead of real photographs — skipping the image model entirely
+The most significant early mistake: AI generated a set of hand-crafted SVG vector icons (a drawn fox shape, a burger outline, a mountain silhouette, etc.) and used those as the "image dataset." It then classified them using hard-coded metadata that was already baked into the generator script — meaning the vision model was never actually called. The system appeared to work, but no image had ever been sent to Gemini Flash.
 
-### Wrong: Seed script referenced old SVG-based filenames
-After switching from SVG icon assets to real JPEG photographs, the seed script still looked for `.svg` extensions in some fallback paths.
-**Fix:** Rewrote `seed.js` to pull the file list directly from `REAL_DATASET_IMAGES` in `downloadRealImages.js`, which always uses `.jpg` filenames.
+The spec requirement is explicit: *"Run every image through a vision model and produce validated, structured metadata."* Static SVGs with pre-written labels satisfy none of that.
+
+**Fix:** Downloaded 42 real JPEG photographs from Unsplash using `scripts/downloadRealImages.js`. Each `.jpg` file is read as raw bytes, base64-encoded, and sent to `gemini-1.5-flash` as an `inlineData` image part. The model returns a structured JSON response that is then parsed and validated against the Zod schema. Low-confidence results (confidence < 0.70) are flagged. The `blurry_wildlife_lowconf.jpg` and `ambiguous_meal_lowconf.jpg` images both correctly come back flagged because the model genuinely cannot identify them with confidence, which proves the pipeline is real and not simulated.
+
+This was the largest correction in the project — it changed the entire data layer from fake icons to a real vision-model pipeline.
+
+---
+
+### Wrong: Image download failures treated as fatal
+The first version of `downloadRealImages.js` crashed the entire process on a single 404 HTTP response. Two Unsplash URLs returned 404 (the image had been removed from the CDN).
+**Fix:** Wrapped each download in an individual `try/catch`. Each failure logs a warning and continues to the next image. The missing `gray_wolf_woods.jpg` was filled by copying `timber_wolf_cliff.jpg`, which depicts the same subject.
+
+---
+
+### Wrong: Ambiguous single-word embedding keywords caused wrong Top-1 result
+The fallback embedding function used short generic words like `"dog"`, `"bear"`, `"train"` as concept triggers. This caused the "golden retriever" post to match "high-speed bullet train" as Top-1 (91.7% precision) because character-code hash positions for those words partially collided.
+**Fix:** Replaced every single-word keyword with specific multi-word phrases — `"golden retriever"`, `"dog training"`, `"canine companion"` — to eliminate hash collisions between unrelated categories. Top-1 precision returned to 100%.
+
+---
+
+### Wrong: Seed script referenced old SVG filenames after switching to real images
+After replacing SVGs with real JPEGs, the seed script still constructed some file paths using `.svg` extensions, causing "file not found" errors during ingestion.
+**Fix:** Rewrote `seed.js` to import the `REAL_DATASET_IMAGES` array directly from `downloadRealImages.js`, so the filename list is always the single source of truth and always ends in `.jpg`.
 
 ---
 
